@@ -7,11 +7,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Detector;
@@ -28,6 +36,8 @@ import java.io.InputStream;
 
 public class PhotoViewerActivity extends Activity {
     private static final String TAG = "PhotoViewerActivity";
+public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +49,12 @@ public class PhotoViewerActivity extends Activity {
         */
 
         Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.f1);
+
+        imageView=(ImageView)findViewById(R.id.imageView);
+
+        imageViews1=(ImageView)findViewById(R.id.imageViews1);
+        imageViews2=(ImageView)findViewById(R.id.imageViews2);
+        imageViews3=(ImageView)findViewById(R.id.imageViews3);
 
         // A new face detector is created for detecting the face and its landmarks.
         //
@@ -87,20 +103,58 @@ public class PhotoViewerActivity extends Activity {
         }
 
         FaceView overlay = (FaceView) findViewById(R.id.faceView);
-        overlay.setContent(bitmap, faces);
+      // overlay.setContent(bitmap, faces);
+
+    processFace(bitmap,faces);
 
         // Although detector may be used multiple times for different images, it should be released
         // when it is no longer needed in order to free native resources.
         safeDetector.release();
     }
+    private Bitmap getScaledBitMapBaseOnScreenSize(Bitmap bitmapOriginal){
+
+        Bitmap scaledBitmap=null;
+        try {
+            DisplayMetrics metrics = new DisplayMetrics();
+            this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
 
-    public void processFacess(Bitmap bitmap,SparseArray<Face> faces){
+            int width = bitmapOriginal.getWidth();
+            int height = bitmapOriginal.getHeight();
+
+            float scaleWidth = metrics.scaledDensity;
+            float scaleHeight = metrics.scaledDensity;
+
+            // create a matrix for the manipulation
+            Matrix matrix = new Matrix();
+            // resize the bit map
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            // recreate the new Bitmap
+            scaledBitmap = Bitmap.createBitmap(bitmapOriginal, 0, 0, width, height, matrix, true);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return scaledBitmap;
+    }
+
+    public void processFace(Bitmap bitmap,SparseArray<Face> faces){
         Canvas canvasFace;
         Bitmap bitmapFace;
-        bitmapFace=Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        BitmapFactory.Options options=new BitmapFactory.Options();
+        options.inMutable=true;
+
+        Bitmap bitmapmask=BitmapFactory.decodeResource(getResources(),R.drawable.mas,options);
+    //   bitmapmask=Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),bitmapmask.getConfig());
+        bitmapFace=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         canvasFace=new Canvas(bitmapFace);
+
+        Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.STROKE);
+
 
         for (int i = 0; i < faces.size(); ++i) {
             Face face = faces.valueAt(i);
@@ -116,9 +170,14 @@ public class PhotoViewerActivity extends Activity {
 
 
 
+          canvasFace.drawRect(new RectF(xtopLeft,ytopLeft,xBottom,yBottom),paint);
+            Rect destBounds1 = new Rect((int)xtopLeft, (int)ytopLeft, (int)(xBottom ), (int)(yBottom ));
+          canvasFace.drawBitmap(bitmapmask,null,destBounds1,paint);
 
 
         }
+
+       imageView.setImageBitmap(bitmapFace);
 
     }
 
