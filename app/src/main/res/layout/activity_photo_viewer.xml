@@ -18,23 +18,20 @@
             android:id="@+id/imageViews2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/f1" />
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/imageViews3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/f1" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <com.geniteam.mfacedetectionmobilevision.FaceView
             android:id="@+id/faceView"
@@ -46,7 +43,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:orientation="horizontal">
 
         <ImageView
@@ -54,16 +51,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/f1" />
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/imageViews1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="gone"
-            app:srcCompat="@drawable/f1" />
+            android:visibility="visible" />
     </LinearLayout>
 
 </LinearLayout>

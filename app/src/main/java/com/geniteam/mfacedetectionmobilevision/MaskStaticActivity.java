@@ -1,24 +1,29 @@
 package com.geniteam.mfacedetectionmobilevision;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,36 +31,54 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-import com.google.android.gms.vision.face.Landmark;
-
-import java.io.InputStream;
 
 /**
  * Created by 7CT on 3/26/2018.
  */
 
-public class PhotoViewerActivity extends Activity {
-    private static final String TAG = "PhotoViewerActivity";
+public class MaskStaticActivity extends Activity implements View.OnClickListener{
+    private static final String TAG = "FaceBeautiActivity";
 public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
 
-
+Button buttonPick;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_viewer);
+        setContentView(R.layout.activity_main);
 
       /*  InputStream stream = getResources().openRawResource(R.raw.face);
         Bitmap bitmap = BitmapFactory.decodeStream(stream);
         */
 
-        Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.f1);
+        Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.face);
 
         imageView=(ImageView)findViewById(R.id.imageView);
+        buttonPick=(Button)findViewById(R.id.buttonpick);
 
-        imageViews1=(ImageView)findViewById(R.id.imageViews1);
-        imageViews2=(ImageView)findViewById(R.id.imageViews2);
-        imageViews3=(ImageView)findViewById(R.id.imageViews3);
+        buttonPick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                if(isStoragePermissionGranted()){
+                    loadImagefromGallery();
+                }
+
+            }
+        });
+
+        imageViews1=(ImageView)findViewById(R.id.mas1);
+        imageViews2=(ImageView)findViewById(R.id.mas2);
+        imageViews3=(ImageView)findViewById(R.id.mas3);
+
+        imageViews1.setOnClickListener(this);
+        imageViews2.setOnClickListener(this);
+        imageViews3.setOnClickListener(this);
+
+
+    }
+
+
+    public void faceDetectorInit(Bitmap bitmap,Bitmap bitmapmask){
         // A new face detector is created for detecting the face and its landmarks.
         //
         // Setting "tracking enabled" to false is recommended for detection with unrelated
@@ -103,14 +126,16 @@ public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
         }
 
         FaceView overlay = (FaceView) findViewById(R.id.faceView);
-      // overlay.setContent(bitmap, faces);
+        //  overlay.setContent(bitmap, faces);
 
-    processFace(bitmap,faces);
+        processFace(bitmap,faces,bitmapmask);
 
         // Although detector may be used multiple times for different images, it should be released
         // when it is no longer needed in order to free native resources.
         safeDetector.release();
     }
+
+
     private Bitmap getScaledBitMapBaseOnScreenSize(Bitmap bitmapOriginal){
 
         Bitmap scaledBitmap=null;
@@ -139,14 +164,15 @@ public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
         return scaledBitmap;
     }
 
-    public void processFace(Bitmap bitmap,SparseArray<Face> faces){
+    public void processFace(Bitmap bitmap,SparseArray<Face> faces,Bitmap bitmapmask){
         Canvas canvasFace;
         Bitmap bitmapFace;
         BitmapFactory.Options options=new BitmapFactory.Options();
         options.inMutable=true;
 
-        Bitmap bitmapmask=BitmapFactory.decodeResource(getResources(),R.drawable.mas,options);
+
     //   bitmapmask=Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),bitmapmask.getConfig());
+
         bitmapFace=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         canvasFace=new Canvas(bitmapFace);
@@ -161,7 +187,7 @@ public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
 
 
             float xtopLeft= (float) (face.getPosition().x);
-            float ytopLeft= (float) (face.getPosition().y);
+            float ytopLeft= (float) (face.getPosition().y)+(face.getHeight()/6);
 
 
             float xBottom= (float) (xtopLeft+face.getWidth());
@@ -169,6 +195,7 @@ public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
             float yBottom= (float) (ytopLeft+face.getHeight());
 
 
+          Bitmap  bitmapmask1=Bitmap.createScaledBitmap(bitmapmask,(int)face.getWidth(),(int)face.getHeight(),true);
 
           canvasFace.drawRect(new RectF(xtopLeft,ytopLeft,xBottom,yBottom),paint);
             Rect destBounds1 = new Rect((int)xtopLeft, (int)ytopLeft, (int)(xBottom ), (int)(yBottom ));
@@ -181,9 +208,141 @@ public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
 
     }
 
+    int imagePick=100;
+
+    public void loadImagefromGallery() {
+
+
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        startActivityForResult(galleryIntent, imagePick);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode==RESULT_OK){
+            if(requestCode==imagePick){
+            getBitmap(data);
+            }
+
+
+        }
+    }
+
+    String imgDecodableString;
+    Bitmap bitmapFromGallery;
+    public  void getBitmap(Intent data){
+        try {
+
+            // When an Image is picked
 
 
 
+                // Get the Image from data
 
 
+
+                Uri selectedImage = data.getData();
+
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+
+
+                // Get the cursor
+
+                Cursor cursor = getContentResolver().query(selectedImage,
+
+                        filePathColumn, null, null, null);
+
+                // Move to first row
+
+                cursor.moveToFirst();
+
+
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+                imgDecodableString = cursor.getString(columnIndex);
+
+                cursor.close();
+
+               // ImageView imgView = (ImageView) findViewById(R.id.imgView);
+
+                // Set the Image in ImageView after decoding the String
+
+              //  imgView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
+
+bitmapFromGallery=BitmapFactory.decodeFile(imgDecodableString);
+imageView.setImageBitmap(bitmapFromGallery);
+
+
+        } catch (Exception e) {
+e.printStackTrace();
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+
+                    .show();
+
+        }
+
+    }
+
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            //resume tasks needing this permission
+
+            loadImagefromGallery();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        BitmapFactory.Options options=new BitmapFactory.Options();
+        options.inMutable=true;
+        if(view.getId()==R.id.mas1){
+            Bitmap bitmapmask=BitmapFactory.decodeResource(getResources(),R.drawable.ms1,options);
+
+            faceDetectorInit(bitmapFromGallery,bitmapmask);
+        }
+
+        if(view.getId()==R.id.mas2){
+            Bitmap bitmapmask=BitmapFactory.decodeResource(getResources(),R.drawable.ms2,options);
+
+            faceDetectorInit(bitmapFromGallery,bitmapmask);
+        }
+        if(view.getId()==R.id.mas3){
+            Bitmap bitmapmask=BitmapFactory.decodeResource(getResources(),R.drawable.ms3,options);
+
+            faceDetectorInit(bitmapFromGallery,bitmapmask);
+        }
+    }
 }
+
+

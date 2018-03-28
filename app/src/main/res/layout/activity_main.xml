@@ -8,16 +8,45 @@
     tools:context="com.geniteam.mfacedetectionmobilevision.MainActivity">
 
     <ImageView
-        android:id="@+id/imv"
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="320dp"
         app:srcCompat="@drawable/f1" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/mas1"
+            android:layout_width="wrap_content"
+            android:layout_height="90dp"
+            android:layout_weight="1"
+            android:src="@drawable/ms3" />
+
+        <ImageView
+            android:id="@+id/mas2"
+            android:layout_width="wrap_content"
+            android:layout_height="90dp"
+            android:layout_weight="1"
+            android:src="@drawable/ms1" />
+
+        <ImageView
+            android:id="@+id/mas3"
+            android:layout_width="wrap_content"
+            android:layout_height="90dp"
+            android:layout_weight="1"
+            android:src="@drawable/ms2" />
+    </LinearLayout>
+
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonpick"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Process" />
+        android:text="Pick image" />
 
 </RelativeLayout>

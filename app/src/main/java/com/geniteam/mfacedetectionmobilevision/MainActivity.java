@@ -1,5 +1,6 @@
 package com.geniteam.mfacedetectionmobilevision;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,24 +12,34 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 ImageView imageView;
+Button buttonMask;
+Button faceBeautify;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        imageView=(ImageView)findViewById(R.id.imv);
+        setContentView(R.layout.mainlay);
 
-        loadImage();
+      buttonMask=(Button)findViewById(R.id.mask);
+        faceBeautify=(Button)findViewById(R.id.face);
+
+        buttonMask.setOnClickListener(this);
+
+        faceBeautify.setOnClickListener(this);
+
+       /* loadImage();
         createPaintObj();
         createTemBitmapAndCanvas();
-        createFaceDetectorDetectFacesAndDrawRectangle();
+        createFaceDetectorDetectFacesAndDrawRectangle();*/
 
 
     }
@@ -88,5 +99,16 @@ ImageView imageView;
             temCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
         }
        // imageView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId()==R.id.face){
+            startActivity(new Intent(getApplicationContext(),FaceBeautiActivity.class));
+        }
+
+        if(view.getId()==R.id.mask){
+            startActivity(new Intent(getApplicationContext(),MaskStaticActivity.class));
+        }
     }
 }

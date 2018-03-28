@@ -2,10 +2,8 @@ package com.geniteam.mfacedetectionmobilevision;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -13,19 +11,16 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.Landmark;
 
-import static com.geniteam.mfacedetectionmobilevision.PhotoViewerActivity.imageView;
-import static com.geniteam.mfacedetectionmobilevision.PhotoViewerActivity.imageViews1;
-import static com.geniteam.mfacedetectionmobilevision.PhotoViewerActivity.imageViews2;
-import static com.geniteam.mfacedetectionmobilevision.PhotoViewerActivity.imageViews3;
+import static com.geniteam.mfacedetectionmobilevision.FaceBeautiActivity.imageView;
+import static com.geniteam.mfacedetectionmobilevision.FaceBeautiActivity.imageViews1;
+import static com.geniteam.mfacedetectionmobilevision.FaceBeautiActivity.imageViews2;
+import static com.geniteam.mfacedetectionmobilevision.FaceBeautiActivity.imageViews3;
 
 /**
  * Created by 7CT on 3/26/2018.
@@ -96,12 +91,12 @@ public class FaceView extends View{
         paint.setColor(Color.RED);
 
 
-        Bitmap bitmapFac=Bitmap.createBitmap(mBitmap.getWidth(),mBitmap.getHeight(), Bitmap.Config.RGB_565);
+        Bitmap bitmapFac=Bitmap.createBitmap(mBitmap.getWidth(),mBitmap.getHeight(), Bitmap.Config.ARGB_8888);
 
         Canvas canvas1=new Canvas(bitmapFac);
         Rect destBounds = new Rect(0, 0, (int)(mBitmap.getWidth() * scale), (int)(mBitmap.getHeight() * scale));
 
-        canvas1.drawBitmap(bitmapFac,0,0,paint);
+        //canvas1.drawBitmap(bitmapFac,0,0,paint);
 
         for (int i = 0; i < mFaces.size(); ++i) {
             Face face = mFaces.valueAt(i);
@@ -119,15 +114,15 @@ public class FaceView extends View{
                 canvas.drawRect(xtopLeft,ytopLeft,xBottom,yBottom,paint);
             }
 
-            RectF rectF=new RectF(xtopLeft,ytopLeft,xBottom,yBottom);
+           /* RectF rectF=new RectF(xtopLeft,ytopLeft,xBottom,yBottom);
           //  canvas1.drawBitmap(bitmapFac,new Matrix(),paint);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 canvas1.drawRect(xtopLeft,ytopLeft,xBottom,yBottom,paintFace);
             }
 
             paintFace.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            Rect destBounds1 = new Rect(0, 0, (int)(mBitmap.getWidth() * scale), (int)(mBitmap.getHeight() * scale));
-            canvas1.drawBitmap(mBitmap, null, destBounds1, paintFace);
+            Rect destBounds1 = new Rect((int) xtopLeft, (int) ytopLeft, (int)(mBitmap.getWidth() * scale), (int)(mBitmap.getHeight() * scale));
+            canvas1.drawBitmap(mBitmap, null, destBounds1, paintFace);*/
 
 
            // canvas1.drawBitmap(bitmapFac,new Rect(),paint);
@@ -149,10 +144,10 @@ public class FaceView extends View{
      // canvas.drawBitmap(mBitmap,0,0,paint);
 
 
-        imageViews1.setImageBitmap(BitmapClassics.doGamma(bitmapFac,1.8,1.8,1.8));
-        //imageViews2.setImageBitmap(BitmapClassics.doColorFilter(bitmapFac,1.8,1.8,1.8));
-      //  imageViews3.setImageBitmap(BitmapClassics.shrpBitmap(bitmapFac,BitmapClassics.kernalBlur));
-        imageView.setImageBitmap(combineTwoBitmaps(mBitmap,bitmapFac));
+      //  imageViews1.setImageBitmap(BitmapClassics.doGamma(bitmapFac,1.8,1.8,1.8));
+        //imageViews2.setImageBitmap(BitmapClassics.doColorFilter(bitmapFac,0,1.8,1.8));
+       //imageViews3.setImageBitmap(BitmapClassics.shrpBitmap(bitmapFac,BitmapClassics.kernalBlur));
+      //  imageView.setImageBitmap(BitmapClassics.doGamma(bitmapFac,1.8,1.8,1.8));
     }
 
 
