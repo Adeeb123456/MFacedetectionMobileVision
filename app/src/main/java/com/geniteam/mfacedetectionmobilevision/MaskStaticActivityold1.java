@@ -12,7 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -40,20 +39,12 @@ import com.google.android.gms.vision.face.Landmark;
  * Created by 7CT on 3/26/2018.
  */
 
-public class MaskStaticActivity extends Activity implements View.OnClickListener{
+public class MaskStaticActivityold1 extends Activity implements View.OnClickListener{
     private static final String TAG = "FaceBeautiActivity";
 public  static ImageView imageView,imageViews1,imageViews2,imageViews3,imageViews4;
 
 Button buttonPick;
 int filterToApply=0;
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        bitmapFace=null;
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -437,39 +428,20 @@ if(bitmapFace==null){
             for (Landmark landmark :  face.getLandmarks()) {
                 int cx = (int) (landmark.getPosition().x );
                 int cy = (int) (landmark.getPosition().y );
-Paint bluePaint=new Paint();
-bluePaint.setColor(Color.BLUE);
-
-                Paint GreenPaint=new Paint();
-                GreenPaint.setColor(Color.GREEN);
 
                 if(landmark.getType()==Landmark.LEFT_EYE){
-
-
                     leftEyeX=landmark.getPosition().x;
                     leftEyeY=landmark.getPosition().y;
-                    paint.setColor(Color.YELLOW);
-                    canvasFace.drawCircle(cx, cy, 70, paint);
-                    canvasFace.drawCircle(cx, cy, 60, bluePaint);
-                    canvasFace.drawCircle(cx, cy, 50, GreenPaint);
-                    paint.setColor(Color.YELLOW);
-                    canvasFace.drawCircle(cx, cy, 40, paint);
-
-                    canvasFace.drawCircle(cx, cy, 30, paint);
+                    canvasFace.drawCircle(cx, cy, 20, paint);
+                    canvasFace.drawCircle(cx, cy, 10, paint);
 
                 }
 
                 if(landmark.getType()==Landmark.RIGHT_EYE){
                     righteyeX=landmark.getPosition().x;
                     righteyeY=landmark.getPosition().y;
-                    paint.setColor(Color.YELLOW);
-                    canvasFace.drawCircle(cx, cy, 70, paint);
-                    canvasFace.drawCircle(cx, cy, 60, bluePaint);
-                    canvasFace.drawCircle(cx, cy, 50, GreenPaint);
-                    paint.setColor(Color.YELLOW);
-                    canvasFace.drawCircle(cx, cy, 40, paint);
-
-                    canvasFace.drawCircle(cx, cy, 30, paint);
+                    canvasFace.drawCircle(cx, cy, 20, paint);
+                    canvasFace.drawCircle(cx, cy, 10, paint);
                 }
 
                 if(landmark.getType()==Landmark.NOSE_BASE){
@@ -524,9 +496,9 @@ bluePaint.setColor(Color.BLUE);
             }
 
             if(filterToApply==1){
-                bitmapFace=bitmap.copy(Bitmap.Config.ARGB_8888,true);
-                canvasFace=new Canvas(bitmapFace);
-             /*   canvasFace.drawRect(new RectF(righteyeX-face.getWidth()/7,(int)(rightmouthY+leftmouthY)/2-face.getHeight()/7,leftEyeX+face.getWidth()/7,noseBaseY),paint);
+               /* bitmapFace=bitmap.copy(Bitmap.Config.ARGB_8888,true);
+                canvasFace=new Canvas(bitmapFace);*/
+                canvasFace.drawRect(new RectF(righteyeX-face.getWidth()/7,(int)(rightmouthY+leftmouthY)/2-face.getHeight()/7,leftEyeX+face.getWidth()/7,noseBaseY),paint);
                 //  Rect destBounds1 = new Rect((int)righteyeX,(int)(righteyeY+leftEyeY)/2,(int)leftEyeX,(int)noseBaseY);
                 Rect destBounds1 = new Rect((int)(righteyeX-face.getWidth()/7),(int)((righteyeY+leftEyeY)/2-face.getHeight()/7),(int)(leftEyeX+face.getWidth()/7),(int)noseBaseY);
 
@@ -555,15 +527,7 @@ bluePaint.setColor(Color.BLUE);
 
 
                 Bitmap bitmapBread=BitmapFactory.decodeResource(getResources(),R.drawable.b2fit,options);
-                canvasFace.drawBitmap(bitmapBread,null,destBounds3,paint);*/
-
-
-               // canvasFace.drawRect(new RectF(righteyeX-face.getWidth()/7,(int)(rightmouthY+leftmouthY)/2-face.getHeight()/7,leftEyeX+face.getWidth()/7,noseBaseY),paint);
-                //  Rect destBounds1 = new Rect((int)righteyeX,(int)(righteyeY+leftEyeY)/2,(int)leftEyeX,(int)noseBaseY);
-
-                Rect destBounds4 = new Rect((int)(righteyeX-face.getWidth()/6),(int)((righteyeY+leftEyeY)/2-face.getHeight()/3),(int)(leftEyeX+face.getWidth()/6),(int)(rightmouthY+leftmouthY/2-(face.getHeight()/3)));
-                Bitmap bitmapface=BitmapFactory.decodeResource(getResources(),R.drawable.masfit,options);
-                canvasFace.drawBitmap(bitmapface,null,destBounds4,paint);
+                canvasFace.drawBitmap(bitmapBread,null,destBounds3,paint);
 
             }
 
@@ -661,7 +625,7 @@ e.printStackTrace();
 
     public  boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v(TAG,"Permission is granted");
                 return true;
