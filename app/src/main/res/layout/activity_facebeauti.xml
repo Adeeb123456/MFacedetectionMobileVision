@@ -7,16 +7,32 @@
     android:padding="16dp"
     tools:context="com.geniteam.mfacedetectionmobilevision.MainActivity">
 
-    <ImageView
-        android:id="@+id/imageViewAfter"
+    <LinearLayout
+        android:id="@+id/srcImgContainer"
         android:layout_width="wrap_content"
-        android:layout_height="320dp"
-        app:srcCompat="@drawable/f1" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <ImageView
+            android:id="@+id/imageViewbefore"
+            android:layout_width="wrap_content"
+            android:layout_height="320dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/f1" />
+
+        <ImageView
+            android:id="@+id/imageViewAfter"
+            android:layout_width="wrap_content"
+            android:layout_height="320dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/f1" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageViewAfter"
+        android:layout_below="@+id/srcImgContainer"
         android:orientation="horizontal"
         android:padding="8dp">
 

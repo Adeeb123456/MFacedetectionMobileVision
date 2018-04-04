@@ -12,7 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -65,7 +64,7 @@ int filterToApply=0;
 
         Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.face);
 
-        imageView=(ImageView)findViewById(R.id.imageView);
+        imageView=(ImageView)findViewById(R.id.imageViewAfter);
         buttonPick=(Button)findViewById(R.id.buttonpick);
 
         buttonPick.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +139,7 @@ int filterToApply=0;
             }
         }
 
-        FaceView overlay = (FaceView) findViewById(R.id.faceView);
+       // FaceView overlay = (FaceView) findViewById(R.id.faceView);
         //  overlay.setContent(bitmap, faces);
 
        if(filterToApply==1){
@@ -400,7 +399,7 @@ if(bitmapFace==null){
         Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(10);
        // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.OVERLAY));
 
 
@@ -437,8 +436,8 @@ if(bitmapFace==null){
             for (Landmark landmark :  face.getLandmarks()) {
                 int cx = (int) (landmark.getPosition().x );
                 int cy = (int) (landmark.getPosition().y );
-Paint bluePaint=new Paint();
-bluePaint.setColor(Color.BLUE);
+            Paint bluePaint=new Paint();
+                 bluePaint.setColor(Color.BLUE);
 
                 Paint GreenPaint=new Paint();
                 GreenPaint.setColor(Color.GREEN);

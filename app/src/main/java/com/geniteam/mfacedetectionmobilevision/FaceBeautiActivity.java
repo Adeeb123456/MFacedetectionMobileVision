@@ -10,13 +10,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
@@ -24,6 +20,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -31,9 +28,6 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-import com.google.android.gms.vision.face.Landmark;
-
-import java.io.InputStream;
 
 /**
  * Created by 7CT on 3/26/2018.
@@ -41,13 +35,15 @@ import java.io.InputStream;
 
 public class FaceBeautiActivity extends Activity {
     private static final String TAG = "FaceBeautiActivity";
-public  static ImageView imageView,imageViews1,imageViews2,imageViews3;
+public  static ImageView imageViewBefore,imageViewAfter,imageViews1,imageViews2,imageViews3;
 
 Button buttonPick;
+FrameLayout frameLayout;
+FaceView faceView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_viewer);
+        setContentView(R.layout.activity_facebeauti);
 
       /*  InputStream stream = getResources().openRawResource(R.raw.face);
         Bitmap bitmap = BitmapFactory.decodeStream(stream);
@@ -55,23 +51,31 @@ Button buttonPick;
 
         Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.face);
 
-        imageView=(ImageView)findViewById(R.id.imageView);
+        imageViewAfter=(ImageView)findViewById(R.id.imageViewAfter);
+        imageViewBefore=(ImageView)findViewById(R.id.imageViewbefore);
 
 
-       imageViews1=(ImageView)findViewById(R.id.imageViews1);
+
+        imageViews1=(ImageView)findViewById(R.id.imageViews1);
         imageViews2=(ImageView)findViewById(R.id.imageViews2);
         imageViews3=(ImageView)findViewById(R.id.imageViews3);
 
-        buttonPick=(Button)findViewById(R.id.buttonpick);
 
-        /*buttonPick.setOnClickListener(new View.OnClickListener() {
+
+        buttonPick=(Button)findViewById(R.id.buttonpick);
+        frameLayout=(FrameLayout)findViewById(R.id.frame);
+       // faceView=new FaceView(this);
+//        frameLayout.addView(faceView);
+
+
+        buttonPick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadImagefromGallery();
             }
-        });*/
+        });
 
-        faceDetectorInit(bitmap);
+       // faceDetectorInit(bitmap);
     }
 
 
@@ -122,10 +126,10 @@ Button buttonPick;
             }
         }
 
-        FaceView overlay = (FaceView) findViewById(R.id.faceView);
-        overlay.setContent(bitmap, faces);
+      //  FaceView overlay = (FaceView) findViewById(R.id.faceView);
+      //  faceView.setContent(bitmap, faces);
 
-       // processFace(bitmap,faces);
+       processFace(bitmap,faces);
 
         // Although detector may be used multiple times for different images, it should be released
         // when it is no longer needed in order to free native resources.
@@ -177,31 +181,60 @@ Button buttonPick;
         Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.RED);
         paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(5);
 
+
+
+        Canvas cropedFaceCanvas;
+        Bitmap cropedBitmap;
+        Paint cropFacePaint;
+        cropedBitmap=Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),bitmap.getConfig());
+
+
+        cropFacePaint=new Paint();
+        cropFacePaint.setColor(Color.BLUE);
+        cropFacePaint.setStrokeWidth(6);
+
+        double viewWidth = imageViewBefore.getWidth();
+        double viewHeight = imageViewBefore.getHeight();
+        double imageWidth = bitmap.getWidth();
+        double imageHeight = bitmap.getHeight();
+        double scale = Math.min(viewWidth / imageWidth, viewHeight / imageHeight);
+
+        cropedFaceCanvas=new Canvas(cropedBitmap);
+        Rect rectBound=new Rect(0,0,(int)(imageWidth*scale),(int)(imageHeight*scale));
+        cropedFaceCanvas.drawBitmap(cropedBitmap,null,rectBound,null);
+        float xtopLeft=0;
+        float ytopLeft=0;
+        float xBottom=0;
+        float yBottom=0;
 
         for (int i = 0; i < faces.size(); ++i) {
             Face face = faces.valueAt(i);
 
 
-            float xtopLeft= (float) (face.getPosition().x);
-            float ytopLeft= (float) (face.getPosition().y)+(face.getHeight()/6);
+             xtopLeft= (float) (face.getPosition().x);
+            ytopLeft= (float) (face.getPosition().y)+(face.getHeight()/6);
 
 
-            float xBottom= (float) (xtopLeft+face.getWidth());
+             xBottom= (float) (xtopLeft+face.getWidth());
 
-            float yBottom= (float) (ytopLeft+face.getHeight());
+            yBottom= (float) (ytopLeft+face.getHeight());
 
 
           Bitmap  bitmapmask1=Bitmap.createScaledBitmap(bitmapmask,(int)face.getWidth(),(int)face.getHeight(),true);
 
-          canvasFace.drawRect(new RectF(xtopLeft,ytopLeft,xBottom,yBottom),paint);
+     //     canvasFace.drawRect(new RectF(xtopLeft,ytopLeft,xBottom,yBottom),paint);
             Rect destBounds1 = new Rect((int)xtopLeft, (int)ytopLeft, (int)(xBottom ), (int)(yBottom ));
-          canvasFace.drawBitmap(bitmapmask,null,destBounds1,paint);
+          //canvasFace.drawBitmap(bitmapmask,null,destBounds1,paint);
 
 
         }
 
-       imageView.setImageBitmap(bitmapFace);
+       Bitmap bitmap1;
+       // bitmap1=doColorFilter(bitmapFace,0,0,.8,(int)xtopLeft,(int)ytopLeft, (int)xBottom,(int)yBottom);
+bitmap1=doGamma(bitmapFace,1.8,1.8,1.8,(int)xtopLeft,(int)ytopLeft, (int)xBottom,(int)yBottom);
+        imageViewAfter.setImageBitmap(bitmapFace);
 
     }
 
@@ -274,7 +307,7 @@ Button buttonPick;
               //  imgView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
 
 bitmapFromGallery=BitmapFactory.decodeFile(imgDecodableString);
-imageView.setImageBitmap(bitmapFromGallery);
+imageViewBefore.setImageBitmap(bitmapFromGallery);
 faceDetectorInit(bitmapFromGallery);
 
         } catch (Exception e) {
@@ -286,6 +319,105 @@ e.printStackTrace();
         }
 
     }
+
+    public static Bitmap doColorFilter(Bitmap src, double red, double green, double blue,int xstart,int ystart,
+                                       int xend,int yend) {
+        // image size
+        int width = src.getWidth();
+        int height = src.getHeight();
+        // create output bitmap
+        Bitmap bmOut = Bitmap.createBitmap(width, height, src.getConfig());
+        // color information
+        int A, R, G, B;
+        int pixel;
+
+        // scan through all pixels
+        for(int x = xstart; x < xend; ++x) {
+            for(int y = ystart; y < yend; ++y) {
+                // get pixel color
+                pixel = src.getPixel(x, y);
+                // apply filtering on each channel R, G, B
+                A = Color.alpha(pixel);
+                R = (int)(Color.red(pixel) * red);
+                G = (int)(Color.green(pixel) * green);
+                B = (int)(Color.blue(pixel) * blue);
+                // set new color pixel to output bitmap
+                src.setPixel(x, y, Color.argb(A, R, G, B));
+            }
+        }
+
+        // return final image
+        return src;
+    }
+
+
+
+    public static Bitmap doGamma(Bitmap src, double red, double green, double blue,int xstart,int ystart,
+                                 int xend,int yend) {
+        // create output image
+        Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        // get image size
+        int width = src.getWidth();
+        int height = src.getHeight();
+        // color information
+        int A, R, G, B;
+        int pixel;
+        // constant value curve
+        final int    MAX_SIZE = 256;
+        final double MAX_VALUE_DBL = 255.0;
+        final int    MAX_VALUE_INT = 255;
+        final double REVERSE = 1.0;
+
+        // gamma arrays
+        int[] gammaR = new int[MAX_SIZE];
+        int[] gammaG = new int[MAX_SIZE];
+        int[] gammaB = new int[MAX_SIZE];
+
+        // setting values for every gamma channels
+        for(int i = 0; i < MAX_SIZE; ++i) {
+            gammaR[i] = (int) Math.min(MAX_VALUE_INT,
+                    (int)((MAX_VALUE_DBL * Math.pow(i / MAX_VALUE_DBL, REVERSE / red)) + 0.5));
+            gammaG[i] = (int) Math.min(MAX_VALUE_INT,
+                    (int)((MAX_VALUE_DBL * Math.pow(i / MAX_VALUE_DBL, REVERSE / green)) + 0.5));
+            gammaB[i] = (int) Math.min(MAX_VALUE_INT,
+                    (int)((MAX_VALUE_DBL * Math.pow(i / MAX_VALUE_DBL, REVERSE / blue)) + 0.5));
+        }
+
+        // apply gamma table
+        for(int x = xstart; x < xend; ++x) {
+            for(int y = ystart; y < yend; ++y) {
+                // get pixel color
+                pixel = src.getPixel(x, y);
+                A = Color.alpha(pixel);
+                // look up gamma
+                R = gammaR[Color.red(pixel)];
+                G = gammaG[Color.green(pixel)];
+                B = gammaB[Color.blue(pixel)];
+                // set new color to output bitmap
+                if(x*x+y*y<=xend*yend){
+                    src.setPixel(x, y, Color.argb(A, R, G, B));
+                }
+              //  Log.d("debug","rec X "+x+" y "+y);
+
+
+
+
+
+
+            }
+        }
+
+        float y1=100,k;
+
+        float m = 2;
+
+
+
+
+        // return final image
+        return src;
+    }
+
 }
 
 

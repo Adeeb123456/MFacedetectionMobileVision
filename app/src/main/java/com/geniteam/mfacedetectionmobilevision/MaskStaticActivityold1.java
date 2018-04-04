@@ -56,7 +56,7 @@ int filterToApply=0;
 
         Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.drawable.face);
 
-        imageView=(ImageView)findViewById(R.id.imageView);
+        imageView=(ImageView)findViewById(R.id.imageViewAfter);
         buttonPick=(Button)findViewById(R.id.buttonpick);
 
         buttonPick.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +131,7 @@ int filterToApply=0;
             }
         }
 
-        FaceView overlay = (FaceView) findViewById(R.id.faceView);
+     //   FaceView overlay = (FaceView) findViewById(R.id.faceView);
         //  overlay.setContent(bitmap, faces);
 
        if(filterToApply==1){

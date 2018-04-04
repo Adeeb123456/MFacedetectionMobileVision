@@ -14,6 +14,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.gms.vision.face.Face;
 
@@ -26,12 +27,12 @@ import static com.geniteam.mfacedetectionmobilevision.FaceBeautiActivity.imageVi
  * Created by 7CT on 3/26/2018.
  */
 
-public class FaceView extends View{
+public class FaceView extends ImageView{
     private Bitmap mBitmap;
     private SparseArray<Face> mFaces;
 
-    public FaceView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public FaceView(Context context) {
+        super(context);
     }
 
     /**
@@ -114,6 +115,8 @@ public class FaceView extends View{
                 canvas.drawRect(xtopLeft,ytopLeft,xBottom,yBottom,paint);
             }
 
+            canvas.drawRect(33,33,12,23,paint);
+
            /* RectF rectF=new RectF(xtopLeft,ytopLeft,xBottom,yBottom);
           //  canvas1.drawBitmap(bitmapFac,new Matrix(),paint);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -141,7 +144,7 @@ public class FaceView extends View{
         Path path=new Path();
 
 
-     // canvas.drawBitmap(mBitmap,0,0,paint);
+     canvas.drawBitmap(mBitmap,0,0,paint);
 
 
       //  imageViews1.setImageBitmap(BitmapClassics.doGamma(bitmapFac,1.8,1.8,1.8));
